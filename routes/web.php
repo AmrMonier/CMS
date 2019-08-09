@@ -1,5 +1,6 @@
 <?php
 
+use Illuminate\Support\Facades\Route;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -13,4 +14,20 @@
 
 Route::get('/', function () {
     return view('welcome');
+});
+
+Auth::routes();
+
+Route::get('/home', 'HomeController@index')->name('home');
+
+Route::prefix('post')->group(function (){
+    Route::get('/', 'PostController@index');
+});
+
+Route::prefix('category')->group(function (){
+    Route::get('/', 'CategoryController@index');
+    Route::post('/create', 'CategoryController@store');
+    Route::get('/{category}', 'CategoryController@edit');
+    Route::patch('/{category}', 'CategoryController@update');
+    Route::delete('/{category}', 'CategoryController@destroy');
 });
