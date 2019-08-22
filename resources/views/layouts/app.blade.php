@@ -7,15 +7,12 @@
     <!-- CSRF Token -->
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>{{ config('app.name', 'Laravel') }}</title>
-
-    <!-- Scripts -->
-    <script src="{{ asset('js/app.js') }}" defer></script>
+    <title>{{ config('app.name', 'Laravel') }}-@yield('title')</title>
 
     <!-- Fonts -->
     <link rel="dns-prefetch" href="//fonts.gstatic.com">
     <link href="https://fonts.googleapis.com/css?family=Nunito" rel="stylesheet">
-
+    @yield('styleSheets')
     <!-- Styles -->
     <link href="{{ asset('css/app.css') }}" rel="stylesheet">
 </head>
@@ -88,14 +85,20 @@
                     {{ session()->get('success') }}
                 </div>
             @endif
-                
+            @if(session()->has('error'))
+                <div class="alert alert-danger alert-dismissible my-2">
+                    {{ session()->get('error') }}
+                </div>
+            @endif
+
             @auth()
                 <div class="row">
                     <div class="col-md-4 py-4">
                         <div class="list-group">
-                            <a class="list-group-item list-group-item-action" href="/posts">Posts</a>
-                            <a class="list-group-item list-group-item-action" href="/category">Categories</a>
-                            <a class="list-group-item list-group-item-action" href="/tags">Tags</a>
+                            <a class="list-group-item list-group-item-action" href="{{ route('post.index') }}">Posts</a>
+                            <a class="list-group-item list-group-item-action" href="{{ route('category.index') }}">Categories</a>
+                            <a class="list-group-item list-group-item-action" href="{{ route('tag.index') }}">Tags</a>
+                            <a class="list-group-item list-group-item-action" href="{{ route('post.trashed') }}">Posts Trash</a>
                         </div>
 
                         @yield('side-content')
@@ -114,5 +117,7 @@
             </main>
         @endauth
     </div>
+    <script src="{{ asset('js/app.js') }}"></script>
+    @yield('scripts')
 </body>
 </html>

@@ -70,8 +70,9 @@ class CategoryController extends Controller
      */
     public function destroy(Category $category)
     {
+        $this->deletePosts($category);
         $category->delete();
-        session()->flash('success', 'Category Deleted successfully');
+        session()->flash('success', 'Category Deleted successfully with all its posts');
         return redirect('/category');
     }
 
@@ -79,5 +80,13 @@ class CategoryController extends Controller
         return Validator::make($data,[
             'name' => 'required|string|min:3|max:15|unique:categories'
         ]);
+    }
+
+    protected function deletePosts(Category $category)
+    {
+        $posts = $category->posts;
+        foreach ($posts as $post) {
+          $post->forceDelete();
+        }
     }
 }

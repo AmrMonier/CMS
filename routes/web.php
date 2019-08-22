@@ -18,16 +18,21 @@ Route::get('/', function () {
 
 Auth::routes();
 
-Route::get('/home', 'HomeController@index')->name('home');
+Route::middleware(['auth'])->group(function (){
+  Route::get('/home', 'HomeController@index')->name('home');
 
-Route::prefix('post')->group(function (){
-    Route::get('/', 'PostController@index');
-});
+  Route::prefix('post')->group(function () {
+    Route::get('/trashed', 'PostController@trashed')->name('post.trashed');
+    Route::delete('/remove', 'PostController@deletePermenat')->name('post.remove');
+    route::put('/{post}/restore','PostController@restore')->name('post.restore');
+    route::get('/delete-all', 'PostController@deleteAll')->name('post.delete-all');
+    route::get('/restore-all', 'PostController@restoreAll')->name('post.restore-all');
 
-Route::prefix('category')->group(function (){
-    Route::get('/', 'CategoryController@index');
-    Route::post('/create', 'CategoryController@store');
-    Route::get('/{category}', 'CategoryController@edit');
-    Route::patch('/{category}', 'CategoryController@update');
-    Route::delete('/{category}', 'CategoryController@destroy');
+  });
+  Route::resource('post', 'PostController');
+
+  Route::resource('category', 'CategoryController')->except(['show', 'create']);
+
+  Route::resource('tag', 'TagController')->except(['show', 'create']);
+
 });
