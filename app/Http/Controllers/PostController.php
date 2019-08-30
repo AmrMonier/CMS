@@ -6,7 +6,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Http\Requests\CreatePostRequest;
 use App\Http\Requests\UpdatePostRequest;
-
+use Auth;
+use Illuminate\Support\Facades\Storage;
 use App\Post;
 use App\Category;
 use App\Tag;
@@ -25,7 +26,8 @@ class PostController extends Controller
      */
     public function index()
     {
-        return view('posts.index')->with('posts', Post::paginate(5));
+        return view('posts.index')
+        ->with('posts', Post::where('user_id',Auth::user()->id)->paginate(5));
     }
 
     /**
@@ -65,7 +67,6 @@ class PostController extends Controller
      */
     public function show(Post $post)
     {
-
         return view('posts.show')->with('post', $post);
     }
 
@@ -77,7 +78,6 @@ class PostController extends Controller
      */
     public function edit(Post $post)
     {
-      // dd($post->tags);
         return view('posts.edit')->with([
           'post' => $post,
           'categories' => Category::all(),
@@ -97,7 +97,10 @@ class PostController extends Controller
         $data = $this->extractData($request);
 
         if($request->hasFile('image')){
-          Storage::delete($post->image);
+
+            if(Storage::exists($post->image)) {
+              Storage::delete($post->image);
+          }
           $data['image'] = $request->image->store('posts');
         }
 
@@ -112,7 +115,7 @@ class PostController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param \App\Post $post
+     * @param $id
      * @return void
      * @throws \Exception
      */
@@ -130,10 +133,10 @@ class PostController extends Controller
 
         return redirect()->back();
     }
+
     /**
      *  return all the trashed posts
      *
-     * @param CreatePostRequest $request
      * @return \Illuminate\Http\Response
      */
     public function trashed()
@@ -144,7 +147,7 @@ class PostController extends Controller
     /**
      * restore a soft Deleted post from the trash
      *
-     * @param CreatePostRequest $request
+     * @param $id
      * @return \Illuminate\Http\Response
      */
 
@@ -155,10 +158,10 @@ class PostController extends Controller
       session()->flash('success', 'Post Restored Successfully');
       return redirect()->back();
     }
+
     /**
      * restore all the deleted posts.
      *
-     * @param CreatePostRequest $request
      * @return \Illuminate\Http\Response
      */
     public function restoreAll()
@@ -172,9 +175,8 @@ class PostController extends Controller
     }
 
     /**
-     * delete all the trashed posts Permenatly
+     * delete all the trashed posts Permanently
      *
-     * @param CreatePostRequest $request
      * @return \Illuminate\Http\Response
      */
     public function deleteAll()
@@ -198,7 +200,8 @@ class PostController extends Controller
             'title' => $request->title,
             'description' => $request->description,
             'content' => $request->content,
-            'category_id' => $request->category
+            'category_id' => $request->category,
+            'user_id' => Auth::user()->id
         ];
     }
 }

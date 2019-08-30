@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Tag;
+use App\Category;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Validator;
 
@@ -46,6 +47,22 @@ class TagController extends Controller
     }
 
     /**
+     * Show the form for editing the specified resource.
+     *
+     * @param Tag $Tag
+     * @return void
+     */
+    public function show(Tag $tag)
+    {
+        return view('tag.show')->with([
+          'tag'=> $tag,
+          'categories' => Category::all(),
+          'tags' => Tag::paginate(6),
+          'posts' => $tag->posts()->simplePaginate(6)
+        ]);
+    }
+
+    /**
      * Update the specified resource in storage.
      *
      * @param Tag $Tag
@@ -77,16 +94,16 @@ class TagController extends Controller
 
     protected function validator(array $data){
         return Validator::make($data,[
-            'name' => 'required|string|min:3|max:15|unique:tags'
+            'name' => 'required|string|min:2|max:20|unique:tags'
         ]);
     }
 
-    protected function deletePosts(Tag $tag)
-    {
-        $posts = $tag->posts;
-        if ($posts->count() !== 0)
-        foreach ($posts as $post) {
-          $post->forceDelete();
-        }
-    }
+    // protected function deletePosts(Tag $tag)
+    // {
+    //     $posts = $tag->posts;
+    //     if ($posts->count() !== 0)
+    //     foreach ($posts as $post) {
+    //       $post->forceDelete();
+    //     }
+    // }
 }

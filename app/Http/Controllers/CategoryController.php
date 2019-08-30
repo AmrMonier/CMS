@@ -2,8 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Category;
+use App\Tag;
+use Exception as ExceptionAlias;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Validator;
 
@@ -40,6 +41,22 @@ class CategoryController extends Controller
      * @param Category $category
      * @return void
      */
+    public function show(Category $category)
+    {
+        return view('category.show')->with([
+          'category'=> $category,
+          'categories' => Category::all(),
+          'tags' => Tag::paginate(6),
+          'posts' => $category->posts()->simplePaginate(6)
+        ]);
+    }
+
+    /**
+     * Show the form for editing the specified resource.
+     *
+     * @param Category $category
+     * @return void
+     */
     public function edit(Category $category)
     {
         return view('category.edit')->with('category', $category);
@@ -53,7 +70,7 @@ class CategoryController extends Controller
      */
     public function update(Category $category)
     {
-        $data['name'] = \request('name');
+        $data['name'] = request('name');
         $this->validator($data)->validate();
         $category->name = $data['name'];
         $category->save();
@@ -66,7 +83,7 @@ class CategoryController extends Controller
      *
      * @param Category $category
      * @return void
-     * @throws \Exception
+     * @throws ExceptionAlias
      */
     public function destroy(Category $category)
     {
@@ -76,12 +93,25 @@ class CategoryController extends Controller
         return redirect('/category');
     }
 
+    /**
+     * Validations Rules of the request
+     *
+     * @param array $data
+     * @return \Illuminate\Contracts\Validation\Validator
+     */
     protected function validator(array $data){
         return Validator::make($data,[
-            'name' => 'required|string|min:3|max:15|unique:categories'
+            'name' => 'required|string|min:3|max:20|unique:categories'
         ]);
     }
 
+    /**
+     * Delete Posts before deleting its category
+     *
+     * @param Category $category
+     * @return void
+     * @throws ExceptionAlias
+     */
     protected function deletePosts(Category $category)
     {
         $posts = $category->posts;

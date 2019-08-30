@@ -174,6 +174,10 @@ return [
         // App\Providers\BroadcastServiceProvider::class,
         App\Providers\EventServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
+        // lara trust providers
+        Laratrust\LaratrustServiceProvider::class,
+        // gravatar providers
+        Thomaswelton\LaravelGravatar\LaravelGravatarServiceProvider::class
 
     ],
 
@@ -225,6 +229,11 @@ return [
         'URL' => Illuminate\Support\Facades\URL::class,
         'Validator' => Illuminate\Support\Facades\Validator::class,
         'View' => Illuminate\Support\Facades\View::class,
+        // lara trust alias
+        'Laratrust'   => Laratrust\LaratrustFacade::class,
+        // gravatar alias
+       'Gravatar' => Thomaswelton\LaravelGravatar\Facades\Gravatar::class,
+
 
     ],
 

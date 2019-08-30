@@ -12,13 +12,14 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-});
+Route::get('guest','WelcomePageController@guestWelcome')->middleware('guest')->name('guest-welcome');
+
+Route::get('/','WelcomePageController@index')->name('welcome');
 
 Auth::routes();
 
 Route::middleware(['auth'])->group(function (){
+
   Route::get('/home', 'HomeController@index')->name('home');
 
   Route::prefix('post')->group(function () {
@@ -31,8 +32,26 @@ Route::middleware(['auth'])->group(function (){
   });
   Route::resource('post', 'PostController');
 
-  Route::resource('category', 'CategoryController')->except(['show', 'create']);
+  Route::resource('category', 'CategoryController')->except(['create']);
 
-  Route::resource('tag', 'TagController')->except(['show', 'create']);
+  Route::resource('tag', 'TagController')->except(['create']);
+
+  Route::resource('comment', 'CommentController');
+
+
+  Route::prefix('user')->group(function ()
+  {
+    Route::get('/', 'UserController@index')->name('user.index');
+    Route::get('/profile/{user}', 'UserController@viewProfile')->name('user.profile');
+    Route::patch('/{user}/promote','UserController@promoteAdmin')->name('user.promote');
+    Route::prefix('/settings')->group(function()
+    {
+        Route::get('/', 'UserController@viewSettings')->name('user.settings');
+        Route::get('/password', 'UserController@viewPassword')->name('user.changePassword');
+        Route::patch('/password', 'UserController@updatePassword')->name('user.updatePassword');
+
+    });
+    Route::patch('/{user}/update', 'UserController@updateInfo')->name('user.update');
+  });
 
 });

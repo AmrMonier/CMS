@@ -1,0 +1,26 @@
+
+@if ($paginator->hasPages())
+  <nav class="flexbox mt-30">
+    {{-- Previous Button --}}
+
+    @if ($paginator->onFirstPage())
+      <a class="btn btn-white disabled">
+        <i class="ti-arrow-left fs-9 ml-4"> Older</i>
+      </a>
+    @else
+      <a class="btn btn-white" href="{{ $paginator->previousPageUrl() }}">
+        <i class="ti-arrow-left fs-9 ml-4"> Older</i>
+      </a>
+    @endif
+    {{-- Next Button --}}
+    @if ($paginator->hasMorePages())
+        <a class="btn btn-white" href="{{ $paginator->nextPageUrl() }}">
+           Newer <i class="ti-arrow-right fs-9 mr-4"></i>
+         </a>
+
+    @else
+      <a class="btn btn-white disabled">Newer <i class="ti-arrow-right fs-9 mr-4"></i></a>
+
+    @endif
+  </nav>
+@endif

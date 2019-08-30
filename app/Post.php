@@ -7,6 +7,8 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\Storage;
 use App\Category;
 use App\Tag;
+use App\User;
+use App\Comment;
 
 class Post extends Model
 {
@@ -17,7 +19,8 @@ class Post extends Model
       'description',
       'content',
       'image',
-      'category_id'
+      'category_id',
+      'user_id'
       ];
 
       public function tags()
@@ -38,5 +41,13 @@ class Post extends Model
       public function deleteImage()
       {
         Storage::delete($this->image);
+      }
+      public function user()
+      {
+        return $this->belongsTo(User::class);
+      }
+      public function comments()
+      {
+        return $this->hasMany(Comment::class);
       }
 }
